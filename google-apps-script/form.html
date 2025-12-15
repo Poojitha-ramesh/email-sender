@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+    <style>
+      body { font-family: Arial; padding: 30px; }
+      input, button {
+        display: block;
+        margin: 10px 0;
+        padding: 8px;
+        width: 260px;
+      }
+      #msg { margin-top: 15px; }
+    </style>
+  </head>
+  <body>
+    <h2>Submit your details</h2>
+
+    <input id="name" type="text" placeholder="Your name" required>
+    <input id="email" type="email" placeholder="Your email" required>
+
+    <button type="button" onclick="submitForm()">Submit</button>
+
+    <div id="msg"></div>
+
+    <script>
+      function submitForm() {
+        const name = document.getElementById('name').value;
+        const email = document.getElementById('email').value;
+        const msg = document.getElementById('msg');
+
+        if (!name || !email) {
+          msg.textContent = 'Please fill all fields';
+          msg.style.color = 'red';
+          return;
+        }
+
+        google.script.run
+          .withSuccessHandler(res => {
+            if (res === 'success') {
+              msg.textContent = 'Thank you! Your response has been saved.';
+              msg.style.color = 'green';
+              document.getElementById('name').value = '';
+              document.getElementById('email').value = '';
+            } else {
+              msg.textContent = 'No data received';
+              msg.style.color = 'red';
+            }
+          })
+          .withFailureHandler(err => {
+            msg.textContent = 'Error: ' + err.message;
+            msg.style.color = 'red';
+          })
+          .submitForm({ name, email });
+      }
+    </script>
+  </body>
+</html>
